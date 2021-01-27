@@ -1,0 +1,23 @@
+{{#each this}}
+<li class="gallery-item">
+    <div class="movie-link">
+        {{#if backdrop_path}}
+        <img data-id={{id}} class="movie-img" src="https://image.tmdb.org/t/p/original{{backdrop_path}} "
+            alt="{{title}}" />
+        {{else}}
+        <img data-id={{id}} class="movie-img" src="https://dummyimage.com/400x600/cfcfcf/ffffff&text=NO+IMAGE+AVAILABLE"
+            alt="{{title}}" />
+        {{/if}}
+        <p class="movie-name">{{title}} </p>
+        <div class="movie__box">
+            <p class="movie-details">
+                {{#if genre_ids}}
+                <span class="movie-details">{{genre_ids}}</span>
+                &nbsp;|&nbsp;
+                {{/if}}
+            </p>
+            <p class="movie-details">{{release_date}}</p>
+        </div>
+    </div>
+</li>
+{{/each }}
