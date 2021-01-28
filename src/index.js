@@ -3,9 +3,11 @@ import './styles.css';
 // import updateGalleryMarkup from "./js/update_gallery-markup";
 // import showLightbox from "./js/lightbox"
 import galleryTpl from "./templataes/gallery.hbs"
+import genres from "./js/genres";
 
 const refs = {
-    galleryRef: document.querySelector(".gallery"),
+  galleryRef: document.querySelector(".gallery"),
+  formRef: document.querySelector(".search-form")
   //   formRef: document.querySelector(".search-form"),
   //   loadMoreBtn: document.querySelector('[data-action="load-more"]'),
   //    largeImage: document.querySelector('.lightbox-image'),
@@ -105,17 +107,72 @@ const refs = {
 
 const apiKey = '030295876ec9637cb436e167c8c73741';
 const page = '1';
+const baseUrl = 'https://api.themoviedb.org/3';
 
-const url = `https://api.themoviedb.org/3/trending/movie/day?&page=${page}&api_key=${apiKey}`;
-fetch(url)
+// const url = `https://api.themoviedb.org/3/trending/movie/day?&page=${page}&api_key=${apiKey}`;
+fetch(`${baseUrl}/trending/movie/day?&page=${page}&api_key=${apiKey}`)
   .then(response => response.json())
-  .then(({ results }) => {
-    const galleryMarkup = galleryTpl(results);
-    refs.galleryRef.insertAdjacentHTML("beforeend", galleryMarkup);
-  })
+  .then(({ results}) => updateGalleryMarkup(results))
   .catch(error => console.log(error));
+
+
+refs.formRef.addEventListener("submit", queryHandler);
+
+
+function queryHandler(event) {
+  event.preventDefault();
+
+  const form = event.currentTarget;
+    const inputValue = form.elements.query.value;
+    refs.galleryRef.innerHTML = "";
+  form.reset();
+  fetch(`${baseUrl}/search/movie?api_key=${apiKey}&query=${inputValue}&page=${page}`)
+  .then(response => response.json())
+  .then(({ results }) => updateGalleryMarkup(results))
+  .catch(error => console.log(error));
+}
+
 
 // const movieId = 628534;
 // const url2 = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${apiKey}`;
 
 // fetch(url2).then(response => response.json()).then(data => console.log(data)).catch(error=>console.log(error));
+// https://api.themoviedb.org/3/genre/movie/list?api_key=<<api_key>>&language=en-US
+
+
+fetch(`${baseUrl}/genre/movie/list?api_key=${apiKey}&language=en-US`)
+  .then(response => response.json())
+  .then((data) =>  console.log(data))
+    .catch(error => console.log(error))
+ 
+
+// function genreRemake() {
+//   const genreName = genres.map(item => item.name);
+  
+//       return genreName;
+    
+//     }
+
+
+function updateGalleryMarkup(results) {
+ results.map((item) => {
+    let newGenres = [];
+    item.genre_ids.map((id) => {
+      const found = genres.find((item) => item.id === id);
+      console.log(found)
+      newGenres.push(found.name);
+    });
+    if (newGenres.length >= 3) {
+      const normalizedGenres = newGenres.slice(0, 2);
+      normalizedGenres.push("Other");
+      item.genre_ids = normalizedGenres.join(', ')
+      item.release_date = item.release_date.slice(0, 4);
+    } else {
+      item.genre_ids = newGenres.join(', ');
+      if (item.release_date) item.release_date = item.release_date.slice(0, 4);
+    }
+    return item;
+  });
+    const galleryMarkup = galleryTpl(results);
+    refs.galleryRef.insertAdjacentHTML("beforeend", galleryMarkup);
+ }

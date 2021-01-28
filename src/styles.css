@@ -21,6 +21,9 @@ body {
     Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
   color: #212121;
 }
+.title {
+  color: blue;
+}
 
 /* .search-form,
 .button {
