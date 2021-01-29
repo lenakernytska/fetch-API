@@ -12,7 +12,7 @@
 
 // export default fetchImages;
 
-const apiKey = '030295876ec9637cb436e167c8c73741';
+// const apiKey = '030295876ec9637cb436e167c8c73741';
 
 // function fetchImages(searchQuery) {
 //     const page = 1;
